@@ -1,4 +1,4 @@
 RTSE
 ====
 
-Real-time syllable emulation
+Real-time syllable emulation using Clojure and Overtone
