@@ -34,8 +34,8 @@
 (definst f6-dyn [start-freq 4000.0 end-freq 4500.0 dur 0.02 Amp 1.0 BW 1000.0] (* 4.0 Amp (bpf (saw 100) (line start-freq end-freq dur) (/ BW (line start-freq end-freq dur)))))
 ;main functions
 (defn make-sound [t_ref [{t_init :t, fa1 :fa, fb1 :fb, fc1 :fc vol1 :vol} {t_end :t, fa2 :fa, fb2 :fb, fc2 :fc vol2 :vol}]]
-(let [t_dur (- t_end t_init); ms change
-      t_dur_fcn (* 0.001 (- t_end t_init))]
+(let [t_dur (- t_end t_init); ms->s change
+      t_dur_fcn (* 0.001 (- t_end t_init))] ;ms->s change
 (if (zero? t_init)
   (at (+ t_init t_ref) (doseq[]  (f1-dyn fa1 fa2 t_dur_fcn vol1) (f2-dyn fb1 fb2 t_dur_fcn vol1) (f3-dyn fc1 fc2 t_dur_fcn vol1) ))
   (at (+ t_init t_ref) (doseq[] (kill f1-dyn f2-dyn f3-dyn) (f1-dyn fa1 fa2 t_dur_fcn vol2)
@@ -65,7 +65,6 @@
        (make-vowel @vowel)
        (osc-handle server "/1/fader1" (fn [msg] (println msg)(loud-alter-vowel-f1 f1 (first (:args msg)))))
        (osc-handle server "/1/fader2" (fn [msg] (println msg)(loud-alter-vowel-f2 f2 (first (:args msg)))))
-       ;(ctl f1-dyn :Amp 0.0)(ctl f2-dyn :Amp 0.0)(ctl f3-dyn :Amp 0.0)
        (kill f1-dyn f2-dyn f3-dyn)))
      ))
 (defn m1 [vowel] 
@@ -73,7 +72,8 @@
    {:t 100 :fa 240.0 :fb 1000.0 :fc 2600.0 :vol 0.5}
    {:t 120  :fa (vowel :fa) :fb (vowel :fb)  :fc (vowel :fc) :vol (vowel :vol)}])
 ;last version
-
+(speak (m1 @vowel))
+(stop)
 
 (defn silent-alter-vowel-f1 ;gen-f1f2
     [vowel val]  
@@ -89,25 +89,13 @@
  (osc-handle server "/1/fader2" (fn [msg] (println msg)(silent-alter-vowel-f2 vowel (first (:args msg)))))(stop))
     ))
 
-
- 
- (speak (m1 @vowel))
- (stop)
-;(defn consonant_to_vowel [vowel]
-;  (osc-handle server "/1/fader1" (fn [msg] (println msg)(control-foo f1 (first (:args msg)))))
-;      )
-(stop)
-
-(def onoff (ref 0))
- 
 (dosync
  (osc-handle server "/1/fader1" (fn [msg] (println msg)(silent-alter-vowel-f1 vowel (first (:args msg)))))
  (osc-handle server "/1/fader2" (fn [msg] (println msg)(silent-alter-vowel-f2 vowel (first (:args msg))))))
-; (osc-handle server "/1/fader1" (fn [msg] (println msg)(alter-vowel-f1 vowel (first (:args msg)))))
- ;(osc-handle server "/1/fader2" (fn [msg] (println msg)(alter-vowel-f2 vowel (first (:args msg)))))
- (osc-handle server "/1/push7" (fn [msg] (println msg)(enable-m (first (:args msg)))));currently m+vowel
-  (osc-handle server "/1/push12" (fn [msg](println msg) (stop)));stop
- ;(osc-rm-handler server "/1/fader1")
- ;(osc-close client)
+
+(osc-handle server "/1/push7" (fn [msg] (println msg)(enable-m (first (:args msg)))));currently m+vowel
+(osc-handle server "/1/push12" (fn [msg](println msg) (stop)));stop
+;(osc-rm-handler server "/1/fader1")
+;(osc-close client)
 ;(osc-close server) 
 (stop)
