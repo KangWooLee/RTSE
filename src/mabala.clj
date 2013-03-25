@@ -2,7 +2,6 @@
   (:use overtone.live)
   (:use [overtone.at-at :only (mk-pool)])
   (:use [overtone.at-at :only (after)]))
-(load-file "src/mabala/data.clj")
 (def my-pool (mk-pool))
 (definst f0 [freq 120.0 BW 50.0 Amp 6.4] (* Amp (bpf (saw 100) freq (/ BW freq))))
 (definst f1 [freq 450.0 BW 50.0 Amp 6.0] (* Amp (bpf (saw 100) freq (/ BW freq))))
